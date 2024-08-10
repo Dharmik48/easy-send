@@ -50,7 +50,9 @@ const UploadForm = ({ file, setFile }: Props) => {
 			if (json.error) throw new Error(json.error)
 
 			toast.success('Upload success')
-			router.push(`/${linkValue}`)
+			router.push(
+				`/success?customName=${linkValue}&filename=${file.name}&filesize=${file.size}`
+			)
 		} catch (e: any) {
 			toast.error(e.message)
 		} finally {

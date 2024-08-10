@@ -11,3 +11,11 @@ export function parseToLink(link: string): string {
 
 	return parsed
 }
+
+export function bytesToKBs(bytes: number) {
+	return Math.round((bytes / 1024 + Number.EPSILON) * 100) / 100
+}
+
+export function kiloBytesToMBs(kbs: number) {
+	return Math.round((kbs / 1024 + Number.EPSILON) * 100) / 100
+}
