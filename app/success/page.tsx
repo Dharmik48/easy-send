@@ -9,7 +9,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card'
-import { bytesToKBs, kiloBytesToMBs } from '@/lib/utils'
+import { bytesToKBs, kiloBytesToMBs, parseToLink } from '@/lib/utils'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
@@ -18,7 +18,9 @@ const Success = ({ searchParams }: SearchParamProps) => {
 
 	if (!customName) redirect('/')
 
-	const downloadLink = `${process.env.NEXT_PUBLIC_URL}/${customName}`
+	const downloadLink = `${process.env.NEXT_PUBLIC_URL}/${parseToLink(
+		customName as string
+	)}`
 
 	let filesizeMB = null
 	const filesizeKB = bytesToKBs(parseInt(filesizeInBytes as string))

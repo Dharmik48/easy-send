@@ -42,7 +42,7 @@ const UploadForm = ({ file, setFile }: Props) => {
 			data.append('file', blob)
 			data.append('name', file.name)
 			data.append('size', `${file.size}`)
-			data.append('custom-link', linkValue)
+			data.append('custom-link', parseToLink(linkValue))
 
 			const res = await uploadFile(data)
 			const json = JSON.parse(res)
@@ -79,9 +79,7 @@ const UploadForm = ({ file, setFile }: Props) => {
 					<DialogDescription>
 						Once uploaded the file will be available for 7 days{' '}
 						{!!linkValue &&
-							`on https://${process.env.NEXT_PUBLIC_URL}/${parseToLink(
-								linkValue
-							)}`}
+							`on ${process.env.NEXT_PUBLIC_URL}/${parseToLink(linkValue)}`}
 					</DialogDescription>
 				</DialogHeader>
 				<form className='grid gap-4 py-4' onSubmit={handleUpload}>
