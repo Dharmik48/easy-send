@@ -43,6 +43,7 @@ export const uploadFile = async (data: FormData) => {
 				customName: customLink,
 				name: data.get('name'),
 				size: data.get('size'),
+				fileId: uploadedFile.$id,
 			}
 		)
 
