@@ -48,9 +48,14 @@ const Success = ({ searchParams }: SearchParamProps) => {
 					</div>
 				</CardContent>
 				<CardFooter>
-					<Link href={'/'} className='w-full'>
-						<Button className='w-full'>New Upload</Button>
-					</Link>
+					<div className='flex items-center gap-2 w-full'>
+						<Link href={'/'} className='w-full'>
+							<Button className='w-full'>New Upload</Button>
+						</Link>
+						<Link href={downloadLink} className='w-full'>
+							<Button className='w-full'>Download</Button>
+						</Link>
+					</div>
 				</CardFooter>
 			</Card>
 		</div>
