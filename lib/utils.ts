@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from 'clsx'
+import { addWeeks, formatDistanceToNow } from 'date-fns'
 import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
@@ -18,4 +19,11 @@ export function bytesToKBs(bytes: number) {
 
 export function kiloBytesToMBs(kbs: number) {
 	return Math.round((kbs / 1024 + Number.EPSILON) * 100) / 100
+}
+
+export function timeLeftToExpire(date: string) {
+	const nextWeek = addWeeks(new Date(date), 1)
+	const timeLeft = formatDistanceToNow(nextWeek)
+
+	return timeLeft
 }

@@ -28,7 +28,6 @@ export const uploadFile = async (data: FormData) => {
 			FILES_COLLECTION_ID!,
 			[Query.equal('customName', customLink)]
 		)
-		console.log(existingFile)
 
 		if (existingFile.total !== 0)
 			throw new AppwriteException('Custom link already in use.')
@@ -42,6 +41,8 @@ export const uploadFile = async (data: FormData) => {
 			{
 				url: `${ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${uploadedFile.$id}/view?project=${APPWRITE_PROJECT_ID}`,
 				customName: customLink,
+				name: data.get('name'),
+				size: data.get('size'),
 			}
 		)
 
@@ -49,6 +50,25 @@ export const uploadFile = async (data: FormData) => {
 	} catch (e: any) {
 		if (uploadedFile) await storage.deleteFile(BUCKET_ID!, uploadedFile.$id)
 
+		return JSON.stringify({ error: e.message || 'Something went wrong' })
+	}
+}
+
+export const getFile = async (id: string) => {
+	try {
+		const filesData = await db.listDocuments(
+			DATABASE_ID!,
+			FILES_COLLECTION_ID!,
+			[Query.equal('customName', id)]
+		)
+
+		if (filesData.total === 0)
+			return JSON.stringify({ error: null, file: null })
+
+		const file = filesData.documents[0]
+
+		return JSON.stringify({ error: null, file })
+	} catch (e: any) {
 		return JSON.stringify({ error: e.message || 'Something went wrong' })
 	}
 }
