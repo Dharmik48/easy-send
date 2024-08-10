@@ -70,9 +70,6 @@ const UploadForm = ({ file, setFile }: Props) => {
 				setOpen(false)
 			}}
 		>
-			{/* <DialogTrigger asChild>
-				<Button variant='outline'>Edit Profile</Button>
-			</DialogTrigger> */}
 			<DialogContent className='sm:min-w-[428px]'>
 				<DialogHeader>
 					<DialogTitle>Upload {file.name}</DialogTitle>
@@ -86,7 +83,6 @@ const UploadForm = ({ file, setFile }: Props) => {
 					<div className='flex flex-col gap-4'>
 						<Label htmlFor='link'>Custom Link</Label>
 						<Input
-							// required
 							id='link'
 							className=''
 							value={linkValue}

@@ -13,6 +13,7 @@ const DownloadBtn = ({ file }: { file: File }) => {
 		setLoading(true)
 		const fileUrl = file.url
 		try {
+			toast.success('Download Started')
 			const response = await fetch(fileUrl)
 			if (!response.ok) throw new Error('Network response was not ok')
 
@@ -23,7 +24,6 @@ const DownloadBtn = ({ file }: { file: File }) => {
 			link.download = file.name
 			document.body.appendChild(link)
 			link.click()
-			toast.success('Download Started')
 			document.body.removeChild(link)
 			window.URL.revokeObjectURL(url)
 		} catch (error) {
