@@ -56,9 +56,7 @@ const UploadForm = ({ files, setFiles }: Props) => {
 
 			toast.success('Upload success')
 			router.push(
-				`/success?customName=${linkValue}&filename=${'yo'}&filesize=${totalSize}&filesCount=${
-					files.length
-				}`
+				`/success?customName=${linkValue}&filesize=${totalSize}&filesCount=${files.length}`
 			)
 		} catch (e: any) {
 			toast.error(e.message)
@@ -93,11 +91,11 @@ const UploadForm = ({ files, setFiles }: Props) => {
 				>
 					{showFiles ? (
 						<>
-							<EyeOffIcon size={20} /> <span>Hide</span>
+							<EyeOffIcon size={20} /> <span>Hide {files.length} Files</span>
 						</>
 					) : (
 						<>
-							<Eye size={20} /> <span>Show</span>
+							<Eye size={20} /> <span>Show {files.length} Files</span>
 						</>
 					)}
 				</Button>
