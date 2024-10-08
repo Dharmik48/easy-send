@@ -12,16 +12,9 @@ import {
 } from '../appwrite.config'
 import { AppwriteException, ID, Query } from 'node-appwrite'
 
-export const uploadFile = async (data: FormData) => {
-	let uploadedFile
+export const uploadFiles = async (data: FormData[], customLink: string) => {
 	try {
-		const customLink = data.get('custom-link')?.toString()
 		if (!customLink) throw new AppwriteException('Custom Link not given')
-
-		const inputFile = InputFile.fromBuffer(
-			data?.get('file') as Blob,
-			data?.get('name') as string
-		)
 
 		const existingFile = await db.listDocuments(
 			DATABASE_ID!,
@@ -32,26 +25,59 @@ export const uploadFile = async (data: FormData) => {
 		if (existingFile.total !== 0)
 			throw new AppwriteException('Custom link already in use.')
 
-		uploadedFile = await storage.createFile(BUCKET_ID!, customLink, inputFile)
+		const uploadedFiles = await Promise.all(
+			data.map(async file => {
+				const uploadedFile = await uploadFile(file, customLink)
+				if (uploadedFile.error) throw new AppwriteException(uploadedFile.error)
 
-		const file = await db.createDocument(
+				const idsAndUrls = {
+					fileId: uploadedFile.fileId,
+					url: `${ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${uploadedFile.fileId}/view?project=${APPWRITE_PROJECT_ID}`,
+				}
+
+				return idsAndUrls
+			})
+		)
+
+		const names = data.map(file => file.get('name'))
+		const sizes = data.map(file => file.get('size'))
+		const fileIds = uploadedFiles.map(file => file.fileId)
+		const urls = uploadedFiles.map(file => file.url)
+
+		const files = await db.createDocument(
 			DATABASE_ID!,
 			FILES_COLLECTION_ID!,
 			ID.unique(),
 			{
-				url: `${ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${uploadedFile.$id}/view?project=${APPWRITE_PROJECT_ID}`,
+				fileIds,
+				urls,
 				customName: customLink,
-				name: data.get('name'),
-				size: data.get('size'),
-				fileId: uploadedFile.$id,
+				names,
+				sizes,
 			}
 		)
 
-		return JSON.stringify({ error: null, file })
+		return JSON.stringify({ error: null, files })
+	} catch (e: any) {
+		return JSON.stringify({ error: e.message || 'Something went wrong' })
+	}
+}
+
+export const uploadFile = async (data: FormData, customLink: string) => {
+	let uploadedFile
+	try {
+		const inputFile = InputFile.fromBuffer(
+			data?.get('file') as Blob,
+			data?.get('name') as string
+		)
+
+		uploadedFile = await storage.createFile(BUCKET_ID!, ID.unique(), inputFile)
+
+		return { error: null, fileId: uploadedFile.$id }
 	} catch (e: any) {
 		if (uploadedFile) await storage.deleteFile(BUCKET_ID!, uploadedFile.$id)
 
-		return JSON.stringify({ error: e.message || 'Something went wrong' })
+		return { error: e.message || 'Something went wrong' }
 	}
 }
 
