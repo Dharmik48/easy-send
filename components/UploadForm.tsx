@@ -17,6 +17,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import Loader from './Loader'
 import { FilesToUploadList } from './FilesToUploadList'
+import { Eye, EyeOffIcon } from 'lucide-react'
 
 interface Props {
 	files: File[]
@@ -82,11 +83,19 @@ const UploadForm = ({ files, setFiles }: Props) => {
 					</DialogDescription>
 				</DialogHeader>
 				<Button
-					className='my-4'
+					className='my-4 lg:mr-auto lg:px-0 space-x-2'
 					variant={'link'}
 					onClick={() => setShowFiles(prev => !prev)}
 				>
-					{showFiles ? 'Hide' : 'Show'} Files
+					{showFiles ? (
+						<>
+							<EyeOffIcon size={20} /> <span>Hide</span>
+						</>
+					) : (
+						<>
+							<Eye size={20} /> <span>Show</span>
+						</>
+					)}
 				</Button>
 				<div className='h-0'>
 					<FilesToUploadList

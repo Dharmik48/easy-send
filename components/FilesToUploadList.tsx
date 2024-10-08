@@ -19,7 +19,7 @@ export function FilesToUploadList({ files, setFiles, className }: Props) {
 	return (
 		<ul
 			className={cn(
-				'border rounded-md p-2 space-y-2 transition-transform origin-top bg-background',
+				'border rounded-md p-2 space-y-2 transition-transform origin-top bg-background lg:origin-top-left',
 				className
 			)}
 		>
