@@ -27,3 +27,11 @@ export function timeLeftToExpire(date: string) {
 
 	return timeLeft
 }
+
+export function parseFileSize(size: number) {
+	let filesizeMB = null
+	const filesizeKB = bytesToKBs(size)
+	if (filesizeKB > 999) filesizeMB = kiloBytesToMBs(filesizeKB)
+
+	return filesizeMB ? `${filesizeMB} MB` : `${filesizeKB} KB`
+}

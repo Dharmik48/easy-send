@@ -5,27 +5,36 @@ import { Button } from './ui/button'
 import { toast } from 'sonner'
 import Loader from './Loader'
 import { useState } from 'react'
+import { cn } from '@/lib/utils'
 
-const DownloadBtn = ({ file }: { file: File }) => {
+interface Props {
+	file: { urls: string[]; names: string[] }
+	children: React.ReactNode
+	className?: string
+}
+
+const DownloadBtn = ({ file, children, className }: Props) => {
 	const [loading, setLoading] = useState(false)
 
 	const handleDownload = async () => {
 		setLoading(true)
-		const fileUrl = file.url
+
 		try {
 			toast.success('Download Started')
-			const response = await fetch(fileUrl)
-			if (!response.ok) throw new Error('Network response was not ok')
+			file.urls.forEach(async (url, i) => {
+				const response = await fetch(url)
+				if (!response.ok) throw new Error('Network response was not ok')
 
-			const blob = await response.blob()
-			const url = window.URL.createObjectURL(blob)
-			const link = document.createElement('a')
-			link.href = url
-			link.download = file.name
-			document.body.appendChild(link)
-			link.click()
-			document.body.removeChild(link)
-			window.URL.revokeObjectURL(url)
+				const blob = await response.blob()
+				const bloburl = window.URL.createObjectURL(blob)
+				const link = document.createElement('a')
+				link.href = bloburl
+				link.download = file.names[i]
+				document.body.appendChild(link)
+				link.click()
+				document.body.removeChild(link)
+				window.URL.revokeObjectURL(url)
+			})
 		} catch (error) {
 			toast.error('Error downloading the file')
 		} finally {
@@ -34,8 +43,12 @@ const DownloadBtn = ({ file }: { file: File }) => {
 	}
 
 	return (
-		<Button className='w-full' onClick={handleDownload} disabled={loading}>
-			{loading ? <Loader /> : 'Download'}
+		<Button
+			className={cn('w-full', className)}
+			onClick={handleDownload}
+			disabled={loading}
+		>
+			{loading ? <Loader /> : children}
 		</Button>
 	)
 }

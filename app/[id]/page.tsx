@@ -9,7 +9,12 @@ import {
 	CardTitle,
 } from '@/components/ui/card'
 import Link from 'next/link'
-import { bytesToKBs, kiloBytesToMBs, timeLeftToExpire } from '@/lib/utils'
+import {
+	bytesToKBs,
+	kiloBytesToMBs,
+	parseFileSize,
+	timeLeftToExpire,
+} from '@/lib/utils'
 import { Clock } from 'lucide-react'
 import DownloadBtn from '@/components/DownloadBtn'
 import { File } from '@/types/appwrite.types'
@@ -17,36 +22,65 @@ import { File } from '@/types/appwrite.types'
 const Download = async ({ params }: SearchParamProps) => {
 	const res = await getFile(params.id)
 	const json = JSON.parse(res)
+	console.log(json)
 
+	const data = json.file
 	const file: File = json.file
 
-	if (!file) return <NoSuchFile />
+	if (!data || !data.urls.length) return <NoSuchFile />
 
-	let filesizeMB = null
-	const filesizeKB = bytesToKBs(parseInt(file.size))
-	if (filesizeKB > 999) filesizeMB = kiloBytesToMBs(filesizeKB)
+	const totalSize = data.sizes.reduce(
+		(acc: number, size: string) => acc + parseInt(size),
+		0
+	)
 
 	return (
 		<div className='min-h-screen flex items-center justify-center'>
 			<Card className='relative'>
 				<CardHeader>
-					<CardTitle className='text-lg'>Download file</CardTitle>
+					<CardTitle className='text-lg'>
+						Download {data.urls.length} file(s)
+					</CardTitle>
 
 					<CardDescription>
-						Your file is ready to download. Click on download to start.
+						Your {data.urls.length === 1 ? 'file is ' : 'files are '} ready to
+						download. Click on download to start.
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className='space-y-4'>
+						<ul className='flex flex-col gap-2'>
+							{data.urls.map((url: string, i: number) => (
+								<li
+									key={url}
+									className='w-full relative group overflow-hidden rounded-md'
+								>
+									<Button
+										variant={'outline'}
+										className='flex justify-between w-full'
+									>
+										<span>{data.names[i]}</span>
+										<span>{parseFileSize(data.sizes[i])}</span>
+									</Button>
+									<DownloadBtn
+										className='absolute inset-0 bg-primary text-primary-foreground cursor-pointer translate-y-full group-hover:translate-y-0 transition-transform backdrop-blur-sm flex justify-between'
+										file={{ urls: [url], names: [data.names[i]] }}
+									>
+										<span>Download {data.names[i]}</span>
+										<span>{parseFileSize(data.sizes[i])}</span>
+									</DownloadBtn>
+								</li>
+							))}
+						</ul>
 						<div className='flex justify-between gap-4 items-center'>
 							<span>{file.name}</span>
-							{filesizeMB ? (
-								<span className='text-muted-foreground'>{filesizeMB} MB</span>
-							) : (
-								<span className='text-muted-foreground'>{filesizeKB} KB</span>
-							)}
+							<span className='text-muted-foreground'>
+								{parseFileSize(totalSize)}
+							</span>
 						</div>
-						<DownloadBtn file={file} />
+						<DownloadBtn file={{ urls: data.urls, names: data.names }}>
+							Download All
+						</DownloadBtn>
 					</div>
 				</CardContent>
 				<CardFooter>

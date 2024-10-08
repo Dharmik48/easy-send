@@ -14,7 +14,12 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 const Success = ({ searchParams }: SearchParamProps) => {
-	const { customName, filename, filesize: filesizeInBytes } = searchParams
+	const {
+		customName,
+		filename,
+		filesize: filesizeInBytes,
+		filesCount,
+	} = searchParams
 
 	if (!customName) redirect('/')
 
@@ -41,7 +46,7 @@ const Success = ({ searchParams }: SearchParamProps) => {
 					<div className='space-y-4'>
 						{!!filesizeKB && (
 							<div className='flex justify-between'>
-								<span>{filename}</span>
+								<span>{filename ? filename : `${filesCount} file(s)`}</span>
 								{filesizeMB ? (
 									<span className='text-muted-foreground'>{filesizeMB} MB</span>
 								) : (
