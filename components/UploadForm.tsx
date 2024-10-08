@@ -52,9 +52,13 @@ const UploadForm = ({ files, setFiles }: Props) => {
 
 			if (json.error) throw new Error(json.error)
 
+			const totalSize = files.reduce((acc, file) => acc + file.size, 0)
+
 			toast.success('Upload success')
 			router.push(
-				`/success?customName=${linkValue}&filename=${'yo'}&filesize=${'cry'}`
+				`/success?customName=${linkValue}&filename=${'yo'}&filesize=${totalSize}&filesCount=${
+					files.length
+				}`
 			)
 		} catch (e: any) {
 			toast.error(e.message)
